@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { ScrollView, StyleSheet, Text, View, TextInput, FlatList } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context'; // <- use this
-
+import { SafeAreaView } from 'react-native-safe-area-context'; // <- us
 export default function BudgetPage() {
   const [savings, setSavings] = useState(500);
   const [income, setIncome] = useState([
