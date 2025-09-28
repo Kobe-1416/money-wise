@@ -5,6 +5,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
 
 // Screens
+import Login from './login'; 
 import HomePage from './Screens/homepage';
 import Lessons from './Screens/lessons';
 import Budget from './Screens/budget';
@@ -45,19 +46,29 @@ function MainTabs() {
 export default function App() {
   return (
     <NavigationContainer>
-      <Stack.Navigator>
+      <Stack.Navigator initialRouteName="Login">
+        {/* Login Screen first */}
+        <Stack.Screen
+          name="Login"
+          component={Login}
+          options={{ headerShown: false }}
+        />
+
+        {/* Main Tabs after login */}
         <Stack.Screen
           name="Tabs"
           component={MainTabs}
           options={{ headerShown: false }}
         />
+
+        {/* Settings page */}
         <Stack.Screen
           name="Settings"
           component={Settings}
           options={{
-            title: 'Settings',             // header title
-            headerStyle: { backgroundColor: '#4a6cf7' },  // background color
-            headerTintColor: 'white',      // back button and title color
+            title: 'Settings',
+            headerStyle: { backgroundColor: '#4a6cf7' },
+            headerTintColor: 'white',
             headerTitleStyle: { fontWeight: '600', fontSize: 20 },
           }}
         />
