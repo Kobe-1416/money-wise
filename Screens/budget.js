@@ -74,7 +74,7 @@ export default function Budget() {
   const renderStaticRow = (item) => (
     <View style={styles.tableRow}>
       <Text style={[styles.cell, { flex: 1 }]}>{item.name || '-'}</Text>
-      <Text style={[styles.cell, { width: 80, textAlign: 'right' }]}>${item.amount}</Text>
+      <Text style={[styles.cell, { width: 80, textAlign: 'right' }]}>R{item.amount}</Text>
     </View>
   );
 
@@ -107,7 +107,7 @@ export default function Budget() {
             ))}
           </View>
 
-          <Text style={styles.totalText}>Total Income: ${totalIncome}</Text>
+          <Text style={styles.totalText}>Total Income: R{totalIncome}</Text>
         </View>
 
         {/* Expenses */}
@@ -134,12 +134,12 @@ export default function Budget() {
             ))}
           </View>
 
-          <Text style={styles.totalText}>Total Expenses: ${totalExpenses}</Text>
+          <Text style={styles.totalText}>Total Expenses: R{totalExpenses}</Text>
         </View>
 
         {/* Savings Tracker */}
         <View style={styles.card}>
-          <Text style={styles.cardTitle}>Savings Goal: ${goal}</Text>
+          <Text style={styles.cardTitle}>Savings Goal: R{goal}</Text>
           <FlatList
             scrollEnabled={false}
             data={savings}
@@ -160,7 +160,7 @@ export default function Budget() {
             <Text style={styles.addButtonText}>+ Add Saving</Text>
           </Pressable>
 
-          <Text style={styles.totalText}>Total Saved: ${totalSavings}</Text>
+          <Text style={styles.totalText}>Total Saved: R{totalSavings}</Text>
           <Text style={styles.totalText}>
             Progress: {((totalSavings / goal) * 100).toFixed(1)}%
           </Text>
@@ -169,7 +169,7 @@ export default function Budget() {
         {/* Total Balance */}
         <View style={styles.card}>
           <Text style={styles.cardTitle}>Total Balance</Text>
-          <Text style={styles.balanceAmount}>${totalBalance}</Text>
+          <Text style={styles.balanceAmount}>R{totalBalance}</Text>
         </View>
       </ScrollView>
     </SafeAreaView>
