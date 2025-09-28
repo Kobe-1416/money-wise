@@ -1,56 +1,64 @@
+// SettingsPage.js
 import React from 'react';
-import { SafeAreaView, ScrollView, StyleSheet, Text, View, Pressable } from 'react-native';
+import { View, Text, StyleSheet, Pressable, ScrollView, Alert } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
-export default function Settings({ navigation }) {
-  const handlePress = (section) => {
-    // handle navigation or alerts for now
-    alert(`Open ${section}`);
+export default function SettingsPage({ navigation }) {
+  const updateUserData = (field) => {
+    Alert.prompt(`Change ${field}`, `Enter new ${field.toLowerCase()}:`, (value) => {
+      if (value && global.userData) {
+        global.userData[field.toLowerCase()] = value;
+        Alert.alert("Success", `${field} updated!`);
+        navigation.goBack();
+      }
+    });
   };
 
-  const settingsSections = [
-    { id: '1', title: 'Profile', description: 'Edit your personal info', icon: '👤' },
-    { id: '2', title: 'Account', description: 'Change email, phone', icon: '📧' },
-    { id: '3', title: 'Security', description: 'Change password, 2FA', icon: '🔒' },
-    { id: '4', title: 'Preferences', description: 'Notifications, theme', icon: '⚙️' },
-  ];
-
   return (
-    <SafeAreaView style={styles.container}>
-      <ScrollView contentContainerStyle={styles.scrollContent}>
-        <Text style={styles.pageTitle}>Settings</Text>
-        {settingsSections.map((section) => (
-          <Pressable
-            key={section.id}
-            style={styles.card}
-            onPress={() => handlePress(section.title)}
-          >
-            <Text style={styles.cardIcon}>{section.icon}</Text>
-            <View style={{ marginLeft: 10 }}>
-              <Text style={styles.cardTitle}>{section.title}</Text>
-              <Text style={styles.cardDescription}>{section.description}</Text>
-            </View>
-          </Pressable>
-        ))}
-      </ScrollView>
-    </SafeAreaView>
+    <View style={styles.container}>
+      <SafeAreaView style={styles.safeArea}>
+        <ScrollView contentContainerStyle={styles.scrollContent}>
+          <View style={styles.sectionContainer}>
+            <Text style={styles.sectionTitle}>Account</Text>
+
+            <Pressable style={styles.settingItem} onPress={() => updateUserData("Username")}>
+              <Text style={styles.settingIcon}>👤</Text>
+              <View>
+                <Text style={styles.settingLabel}>Change Username</Text>
+                <Text style={styles.settingValue}>{global.userData?.username}</Text>
+              </View>
+            </Pressable>
+
+            <Pressable style={styles.settingItem} onPress={() => updateUserData("Email")}>
+              <Text style={styles.settingIcon}>📧</Text>
+              <View>
+                <Text style={styles.settingLabel}>Change Email</Text>
+                <Text style={styles.settingValue}>{global.userData?.email}</Text>
+              </View>
+            </Pressable>
+
+            <Pressable style={styles.settingItem} onPress={() => updateUserData("Password")}>
+              <Text style={styles.settingIcon}>🔒</Text>
+              <View>
+                <Text style={styles.settingLabel}>Change Password</Text>
+                <Text style={styles.settingValue}>••••••••</Text>
+              </View>
+            </Pressable>
+          </View>
+        </ScrollView>
+      </SafeAreaView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#4a6cf7' },
-  scrollContent: { padding: 20, paddingBottom: 40 },
-  pageTitle: { fontSize: 28, fontWeight: '600', color: 'white', marginBottom: 20 },
-  card: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: 'rgba(255,255,255,0.1)',
-    borderRadius: 15,
-    padding: 15,
-    marginBottom: 15,
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.2)',
-  },
-  cardIcon: { fontSize: 24, marginRight: 10 },
-  cardTitle: { color: 'white', fontSize: 18, fontWeight: '500' },
-  cardDescription: { color: 'rgba(255,255,255,0.7)', fontSize: 14 },
+  safeArea: { flex: 1 },
+  scrollContent: { paddingBottom: 40 },
+  sectionContainer: { paddingHorizontal: 20, marginTop: 20 },
+  sectionTitle: { color: 'white', fontSize: 18, fontWeight: '600', marginBottom: 16 },
+  settingItem: { flexDirection: 'row', alignItems: 'center', backgroundColor: 'rgba(255,255,255,0.15)', borderRadius: 16, padding: 16, marginBottom: 12 },
+  settingIcon: { fontSize: 22, marginRight: 12 },
+  settingLabel: { color: 'white', fontSize: 14, fontWeight: '500' },
+  settingValue: { color: 'rgba(255,255,255,0.7)', fontSize: 13 },
 });
