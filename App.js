@@ -5,9 +5,9 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
 
 // Screens
-import HomePage from './Screens/HomePage';
-import Lessons from './Screens/Lessons';
-import Budget from './Screens/Budget';
+import HomePage from './Screens/homepage';
+import Lessons from './Screens/lessons';
+import Budget from './Screens/budget';
 import Settings from './Screens/Settings';
 
 const Stack = createNativeStackNavigator();

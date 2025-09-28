@@ -4,7 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 const { width } = Dimensions.get('window');
 
-export default function LessonsPage() {
+export default function Lessons() {
   const learningModules = [
     { id: '1', name: 'Basics', count: '12 lessons', icon: '🎓' },
     { id: '2', name: 'Budgeting', count: '10 lessons', icon: '💰' },

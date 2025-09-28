@@ -1,7 +1,7 @@
 import React from 'react';
 import { SafeAreaView, ScrollView, StyleSheet, Text, View, Pressable } from 'react-native';
 
-export default function SettingsPage({ navigation }) {
+export default function Settings({ navigation }) {
   const handlePress = (section) => {
     // handle navigation or alerts for now
     alert(`Open ${section}`);
