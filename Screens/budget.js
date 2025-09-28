@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
-import { ScrollView, StyleSheet, Text, View, TextInput, FlatList } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context'; // <- use this
+import { ScrollView, StyleSheet, Text, View, TextInput, FlatList, Pressable } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function Budget() {
-  const [savings, setSavings] = useState(500);
   const [income, setIncome] = useState([
     { id: '1', name: 'Part-time Job', amount: 2000 },
     { id: '2', name: 'Scholarship', amount: 1500 },
@@ -11,17 +10,71 @@ export default function Budget() {
   const [expenses, setExpenses] = useState([
     { id: '1', name: 'Groceries', amount: 600 },
     { id: '2', name: 'Transport', amount: 200 },
-    { id: '3', name: 'Utilities', amount: 300 },
   ]);
+  const [savings, setSavings] = useState([]);
+  const [goal, setGoal] = useState(5000);
 
-  const totalIncome = income.reduce((sum, item) => sum + item.amount, 0);
-  const totalExpenses = expenses.reduce((sum, item) => sum + item.amount, 0);
-  const remaining = totalIncome - totalExpenses;
+  // calculations
+  const totalIncome = income.reduce((sum, i) => sum + (Number(i.amount) || 0), 0);
+  const totalExpenses = expenses.reduce((sum, e) => sum + (Number(e.amount) || 0), 0);
+  const totalSavings = savings.reduce((sum, s) => sum + (Number(s.amount) || 0), 0);
+  const totalBalance = totalIncome - totalExpenses; // <-- NEW BALANCE
 
-  const renderItem = ({ item }) => (
+  // update handlers
+  const updateIncome = (id, field, value) => {
+    setIncome((prev) =>
+      prev.map((item) => (item.id === id ? { ...item, [field]: field === 'amount' ? Number(value) : value } : item))
+    );
+  };
+
+  const updateExpense = (id, field, value) => {
+    setExpenses((prev) =>
+      prev.map((item) => (item.id === id ? { ...item, [field]: field === 'amount' ? Number(value) : value } : item))
+    );
+  };
+
+  const addIncome = () => {
+    setIncome((prev) => [...prev, { id: Date.now().toString(), name: '', amount: 0 }]);
+  };
+
+  const addExpense = () => {
+    setExpenses((prev) => [...prev, { id: Date.now().toString(), name: '', amount: 0 }]);
+  };
+
+  const addSaving = () => {
+    setSavings((prev) => [...prev, { id: Date.now().toString(), amount: 0 }]);
+  };
+
+  const updateSaving = (id, value) => {
+    setSavings((prev) =>
+      prev.map((item) => (item.id === id ? { ...item, amount: Number(value) } : item))
+    );
+  };
+
+  const renderEditableRow = (item, onChange) => (
     <View style={styles.tableRow}>
-      <Text style={styles.tableCell}>{item.name}</Text>
-      <Text style={styles.tableCell}>${item.amount}</Text>
+      <TextInput
+        style={[styles.inputSmall, { flex: 1 }]}
+        placeholder="Name"
+        placeholderTextColor="rgba(255,255,255,0.6)"
+        value={item.name}
+        onChangeText={(text) => onChange(item.id, 'name', text)}
+      />
+      <TextInput
+        style={[styles.inputSmall, { width: 80, marginLeft: 10 }]}
+        keyboardType="numeric"
+        placeholder="0"
+        placeholderTextColor="rgba(255,255,255,0.6)"
+        value={item.amount.toString()}
+        onChangeText={(text) => onChange(item.id, 'amount', text)}
+      />
+    </View>
+  );
+
+  const renderStaticRow = (item) => (
+    <View style={styles.tableRow}>
+      <Text style={[styles.cell, { flex: 1 }]}>{item.name || '-'}</Text>
+      <Text style={[styles.cell, { width: 80, textAlign: 'right' }]}>R{item.amount}</Text>
     </View>
   );
 
@@ -30,44 +83,93 @@ export default function Budget() {
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <Text style={styles.pageTitle}>Budget Tracker</Text>
 
-        <View style={styles.card}>
-          <Text style={styles.cardTitle}>Savings Made</Text>
-          <Text style={styles.savingsAmount}>${savings}</Text>
-          <TextInput
-            style={styles.input}
-            keyboardType="numeric"
-            value={savings.toString()}
-            onChangeText={(text) => setSavings(Number(text))}
-          />
-        </View>
-
+        {/* Income */}
         <View style={styles.card}>
           <Text style={styles.cardTitle}>Income</Text>
           <FlatList
             scrollEnabled={false}
             data={income}
-            renderItem={renderItem}
+            renderItem={({ item }) => renderEditableRow(item, updateIncome)}
             keyExtractor={(item) => item.id}
             style={{ marginTop: 10 }}
           />
-          <Text style={styles.totalText}>Total Income: ${totalIncome}</Text>
+          <Pressable onPress={addIncome} style={styles.addButton}>
+            <Text style={styles.addButtonText}>+ Add Income</Text>
+          </Pressable>
+
+          <View style={{ marginTop: 15 }}>
+            <View style={styles.tableHeader}>
+              <Text style={[styles.headerCell, { flex: 1 }]}>Name</Text>
+              <Text style={[styles.headerCell, { width: 80, textAlign: 'right' }]}>Amount</Text>
+            </View>
+            {income.map((item) => (
+              <View key={item.id}>{renderStaticRow(item)}</View>
+            ))}
+          </View>
+
+          <Text style={styles.totalText}>Total Income: R{totalIncome}</Text>
         </View>
 
+        {/* Expenses */}
         <View style={styles.card}>
           <Text style={styles.cardTitle}>Expenses</Text>
           <FlatList
             scrollEnabled={false}
             data={expenses}
-            renderItem={renderItem}
+            renderItem={({ item }) => renderEditableRow(item, updateExpense)}
             keyExtractor={(item) => item.id}
             style={{ marginTop: 10 }}
           />
-          <Text style={styles.totalText}>Total Expenses: ${totalExpenses}</Text>
+          <Pressable onPress={addExpense} style={styles.addButton}>
+            <Text style={styles.addButtonText}>+ Add Expense</Text>
+          </Pressable>
+
+          <View style={{ marginTop: 15 }}>
+            <View style={styles.tableHeader}>
+              <Text style={[styles.headerCell, { flex: 1 }]}>Name</Text>
+              <Text style={[styles.headerCell, { width: 80, textAlign: 'right' }]}>Amount</Text>
+            </View>
+            {expenses.map((item) => (
+              <View key={item.id}>{renderStaticRow(item)}</View>
+            ))}
+          </View>
+
+          <Text style={styles.totalText}>Total Expenses: R{totalExpenses}</Text>
         </View>
 
+        {/* Savings Tracker */}
         <View style={styles.card}>
-          <Text style={styles.cardTitle}>Remaining Balance</Text>
-          <Text style={styles.remainingAmount}>${remaining}</Text>
+          <Text style={styles.cardTitle}>Savings Goal: R{goal}</Text>
+          <FlatList
+            scrollEnabled={false}
+            data={savings}
+            renderItem={({ item }) => (
+              <TextInput
+                style={[styles.inputSmall, { marginBottom: 8 }]}
+                keyboardType="numeric"
+                placeholder="Enter amount"
+                placeholderTextColor="rgba(255,255,255,0.6)"
+                value={item.amount.toString()}
+                onChangeText={(text) => updateSaving(item.id, text)}
+              />
+            )}
+            keyExtractor={(item) => item.id}
+            style={{ marginTop: 10 }}
+          />
+          <Pressable onPress={addSaving} style={styles.addButton}>
+            <Text style={styles.addButtonText}>+ Add Saving</Text>
+          </Pressable>
+
+          <Text style={styles.totalText}>Total Saved: R{totalSavings}</Text>
+          <Text style={styles.totalText}>
+            Progress: {((totalSavings / goal) * 100).toFixed(1)}%
+          </Text>
+        </View>
+
+        {/* Total Balance */}
+        <View style={styles.card}>
+          <Text style={styles.cardTitle}>Total Balance</Text>
+          <Text style={styles.balanceAmount}>R{totalBalance}</Text>
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -87,16 +189,25 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(255,255,255,0.2)',
   },
   cardTitle: { color: 'white', fontSize: 18, fontWeight: '500', marginBottom: 10 },
-  savingsAmount: { color: 'white', fontSize: 24, fontWeight: '600', marginBottom: 10 },
-  remainingAmount: { color: '#10B981', fontSize: 24, fontWeight: '600', marginTop: 10 },
-  input: {
+  inputSmall: {
     backgroundColor: 'rgba(255,255,255,0.2)',
     color: 'white',
-    padding: 10,
-    borderRadius: 8,
-    fontSize: 16,
+    padding: 8,
+    borderRadius: 6,
+    fontSize: 14,
   },
-  tableRow: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 6 },
-  tableCell: { color: 'white', fontSize: 14 },
-  totalText: { color: 'rgba(255,255,255,0.8)', fontWeight: '500', marginTop: 8 },
+  tableRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 6 },
+  tableHeader: { flexDirection: 'row', borderBottomWidth: 1, borderBottomColor: 'rgba(255,255,255,0.3)', paddingBottom: 4, marginBottom: 6 },
+  headerCell: { color: 'white', fontWeight: '600', fontSize: 14 },
+  cell: { color: 'white', fontSize: 14 },
+  totalText: { color: 'rgba(255,255,255,0.9)', fontWeight: '600', marginTop: 8 },
+  addButton: {
+    backgroundColor: 'rgba(255,255,255,0.2)',
+    borderRadius: 8,
+    padding: 8,
+    marginTop: 10,
+    alignItems: 'center',
+  },
+  addButtonText: { color: 'white', fontWeight: '500' },
+  balanceAmount: { color: '#10B981', fontSize: 24, fontWeight: '700', marginTop: 10 },
 });
