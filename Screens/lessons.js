@@ -7,7 +7,6 @@ const { width } = Dimensions.get('window');
 const learningData = {
   basics: {
     name: 'Basics',
-    count: '2 lessons',
     icon: '🎓',
     lessons: [
       {
@@ -32,7 +31,6 @@ const learningData = {
   },
   budgeting: {
     name: 'Budgeting',
-    count: '10 lessons',
     icon: '💰',
     lessons: [
       {
@@ -52,7 +50,6 @@ const learningData = {
   },
   saving: {
     name: 'Saving & Emergency Fund',
-    count: '8 lessons',
     icon: '🏦',
     lessons: [
       {
@@ -77,7 +74,6 @@ const learningData = {
   },
   investing: {
     name: 'Investing',
-    count: '7 lessons',
     icon: '📈',
     lessons: [
       {
@@ -102,7 +98,6 @@ const learningData = {
   },
   credit: {
     name: 'Credit & Loans',
-    count: '6 lessons',
     icon: '💳',
     lessons: [
       {
